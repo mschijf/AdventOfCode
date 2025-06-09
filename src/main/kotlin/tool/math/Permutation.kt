@@ -72,3 +72,51 @@ fun Long.fac():Long {
 fun Int.fac():Long {
     return this.toLong().fac()
 }
+
+
+//calculate n! / (n-k)!
+private fun perm(n: Int, k: Int): Int {
+    var result = 1
+    for (i in n downTo (n - k + 1))
+        result *= i
+    return result
+}
+
+//calculate an index for n!/k! serie of numbers
+// - poolsize is n
+// - seq is a list of k numbers xi, 0 <= xi < n
+
+private fun permutationIndex(seq: List<Int>, poolSize: Int): Int {
+    val pool = (0 until poolSize).toMutableList()
+    var index = 0
+    val k = seq.size
+
+    for (i in 0 until k) {
+        val pos = pool.indexOf(seq[i])
+        val remaining = poolSize - i - 1
+        index += pos * perm(remaining,k - i - 1)
+        pool.removeAt(pos)
+    }
+
+    return index
+}
+
+//calculate an index for n! serie of numbers
+private fun permutationIndex(permutation: List<Int>): Int {
+    var index = 0
+    var position = 2 // position 1 is paired with factor 0 and so is skipped
+    var factor = 1
+    for (p in permutation.size - 2 downTo 0) {
+        var successors = 0
+        for (q in p + 1..<permutation.size) {
+            if (permutation[p] > permutation[q]) {
+                successors++
+            }
+        }
+        index += (successors * factor)
+        factor *= position
+        position++
+    }
+    return index
+}
+
